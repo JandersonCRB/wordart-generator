@@ -34,7 +34,13 @@ class App extends Component {
   listenToArts() {
     let db = firebase.database();
     db.ref('arts').on('value', snapshot => {
-      this.setState({ arts: Object.values(snapshot.val()) });
+      let values = snapshot.val();
+      if(values) {
+        values = Object.values(snapshot.val())
+      } else {
+        values = []
+      }
+      this.setState({ arts: values });
     })
   }
 
