@@ -18,6 +18,17 @@ const initFirebase = () => {
 };
 
 class App extends Component {
+  arts = [
+    { name: 'Rainbow',        value: 'rainbow' },
+    { name: 'Blues',          value: 'blues' },
+    { name: 'Superhero',      value: 'superhero' },
+    { name: 'Radial',         value: 'radial' },
+    { name: 'Tilt',           value: 'tilt' },
+    { name: 'Purple',         value: 'purple' },
+    { name: 'Horizon',        value: 'horizon' },
+    { name: 'Italic Outline', value: 'italic-outline' },
+    { name: 'Slate',          value: 'slate' },
+  ];
   constructor(){
     super();
     this.state = {
@@ -25,6 +36,7 @@ class App extends Component {
       currentArt: ''
     }
   }
+
   componentWillMount(){
     initFirebase();
     this.listenToArts();
@@ -53,44 +65,6 @@ class App extends Component {
     });
     console.log(this.text.current.value);
   };
-  arts = [
-    {
-      name: 'Rainbow',
-      value: 'rainbow'
-    },
-    {
-      name: 'Blues',
-      value: 'blues'
-    },
-    {
-      name: 'Superhero',
-      value: 'superhero'
-    },
-    {
-      name: 'Radial',
-      value: 'radial'
-    },
-    {
-      name: 'Tilt',
-      value: 'tilt'
-    },
-    {
-      name: 'Purple',
-      value: 'purple'
-    },
-    {
-      name: 'Horizon',
-      value: 'horizon'
-    },
-    {
-      name: 'Italic Outline',
-      value: 'italic-outline'
-    },
-    {
-      name: 'Slate',
-      value: 'slate'
-    },
-  ];
 
   renderArts = () => (
       this.state.arts.map((art, i) => (
