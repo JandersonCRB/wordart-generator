@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import './wordart.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import firebase from 'firebase'
 
 const initFirebase = () => {
@@ -67,9 +68,11 @@ class App extends Component {
 
   renderArts = () => (
       this.state.arts.map((art, i) => (
-          <div className={ `wordart ${art.art}` } key={i}>
-            <span className="text">{ art.text }</span>
-          </div>
+          <li>
+            <div className={ `wordart ${art.art}` } key={i}>
+              <span className="text">{ art.text }</span>
+            </div>
+          </li>
       ))
   );
   changeArt(e) {
@@ -82,18 +85,20 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <form onSubmit={this.submit.bind(this)} className="App-intro">
-          <input type="text" placeholder="Texto" ref={this.text}/> <br />
+        <div className="container">
+          <form onSubmit={this.submit.bind(this)} className="App-intro">
+            <input type="text" placeholder="Texto" ref={this.text}/> <br />
 
-          <select value={this.state.currentArt} onChange={this.changeArt.bind(this)} >
-            { this.arts.map(art => (
+            <select value={this.state.currentArt} onChange={this.changeArt.bind(this)} >
+              { this.arts.map(art => (
                   <option value={art.value} >{art.name}</option>
-            )) }
-          </select>
-          <input type="submit" value="Enviar"/>
-        </form>
-        <div style={{ marginTop: 20 }}>
-          <this.renderArts />
+              )) }
+            </select>
+            <input type="submit" value="Enviar"/>
+          </form>
+          <ul style={{ marginTop: 20 }}>
+            <this.renderArts />
+          </ul>
         </div>
       </div>
     );
