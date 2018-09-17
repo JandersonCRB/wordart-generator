@@ -33,7 +33,7 @@ class App extends Component {
     super();
     this.state = {
       arts: [],
-      currentArt: ''
+      currentArt: this.arts[0].value
     }
   }
 
@@ -63,12 +63,11 @@ class App extends Component {
       text: this.text.current.value,
       art: this.state.currentArt
     });
-    console.log(this.text.current.value);
   };
 
   renderArts = () => (
       this.state.arts.map((art, i) => (
-          <div className="wordart rainbow" key={i}>
+          <div className={ `wordart ${art.art}` } key={i}>
             <span className="text">{ art.text }</span>
           </div>
       ))
