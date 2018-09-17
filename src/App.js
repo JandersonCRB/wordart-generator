@@ -49,6 +49,10 @@ class App extends Component {
   };
   arts = [
     {
+      name: 'Rainbow',
+      value: 'rainbow'
+    },
+    {
       name: 'Blues',
       value: 'blues'
     },
@@ -90,7 +94,7 @@ class App extends Component {
       ))
   );
   changeArt(e) {
-    console.log(e.target.value)
+    this.setState({ currentArt: e.target.value })
   }
   render() {
     return (
@@ -102,9 +106,9 @@ class App extends Component {
         <form onSubmit={this.submit.bind(this)} className="App-intro">
           <input type="text" placeholder="Texto" ref={this.text}/> <br />
 
-          <select value={this.state.currentArt}>
+          <select value={this.state.currentArt} onChange={this.changeArt.bind(this)} >
             { this.arts.map(art => (
-                  <option value={art.value} onChange={this.changeArt.bind(this)}>{art.name}</option>
+                  <option value={art.value} >{art.name}</option>
             )) }
           </select>
           <input type="submit" value="Enviar"/>
