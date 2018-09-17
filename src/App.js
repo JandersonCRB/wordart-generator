@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './wordart.css'
 import firebase from 'firebase'
 
 const initFirebase = () => {
@@ -17,22 +18,81 @@ const initFirebase = () => {
 };
 
 class App extends Component {
+  constructor(){
+    super();
+    this.state = {
+      arts: [],
+      currentArt: ''
+    }
+  }
   componentWillMount(){
     initFirebase();
+    this.listenToArts();
     this.text = React.createRef();
+  }
+
+  listenToArts() {
+    let db = firebase.database();
+    db.ref('arts').on('value', snapshot => {
+      this.setState({ arts: Object.values(snapshot.val()) });
+    })
   }
 
   submit = (e) => {
     e.preventDefault();
     let db = firebase.database();
     db.ref('arts/').push({
-      text: this.text.current.value
+      text: this.text.current.value,
+      art: this.state.currentArt
     });
     console.log(this.text.current.value);
   };
+  arts = [
+    {
+      name: 'Blues',
+      value: 'blues'
+    },
+    {
+      name: 'Superhero',
+      value: 'superhero'
+    },
+    {
+      name: 'Radial',
+      value: 'radial'
+    },
+    {
+      name: 'Tilt',
+      value: 'tilt'
+    },
+    {
+      name: 'Purple',
+      value: 'purple'
+    },
+    {
+      name: 'Horizon',
+      value: 'horizon'
+    },
+    {
+      name: 'Italic Outline',
+      value: 'italic-outline'
+    },
+    {
+      name: 'Slate',
+      value: 'slate'
+    },
+  ];
 
+  renderArts = () => (
+      this.state.arts.map((art, i) => (
+          <div className="wordart rainbow" key={i}>
+            <span className="text">{ art.text }</span>
+          </div>
+      ))
+  );
+  changeArt(e) {
+    console.log(e.target.value)
+  }
   render() {
-
     return (
       <div className="App">
         <header className="App-header">
@@ -41,11 +101,17 @@ class App extends Component {
         </header>
         <form onSubmit={this.submit.bind(this)} className="App-intro">
           <input type="text" placeholder="Texto" ref={this.text}/> <br />
-          <input type="radio" name="art" value="male"/> Male<br/>
-          <input type="radio" name="art" value="female"/> Female<br/>
-          <input type="radio" name="art" value="other"/> Other<br/>
+
+          <select value={this.state.currentArt}>
+            { this.arts.map(art => (
+                  <option value={art.value} onChange={this.changeArt.bind(this)}>{art.name}</option>
+            )) }
+          </select>
           <input type="submit" value="Enviar"/>
         </form>
+        <div style={{ marginTop: 20 }}>
+          <this.renderArts />
+        </div>
       </div>
     );
   }
