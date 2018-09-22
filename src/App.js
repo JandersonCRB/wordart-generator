@@ -74,10 +74,15 @@ class App extends Component {
     }
   };
 
+  delete = key => {
+      let db = firebase.database();
+      db.ref('arts/' + key).remove();
+  };
+
   renderArts = () => (
       this.state.arts.map((art, i) => (
           <div className="col-md-3 " style={{ borderWidth: '3px', borderStyle: 'solid', padding: 20, margin: 20}}>
-              <button type="button" className="close" aria-label="Close" style={{ color: 'red'}}>
+              <button type="button" className="close" aria-label="Close" style={{ color: 'red'}} onClick={ () => this.delete(art.key) }>
                   <span aria-hidden="true">&times;</span>
               </button>
               <div className={ `wordart ${art.art}` }  key={i}>
