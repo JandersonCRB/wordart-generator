@@ -53,7 +53,7 @@ class App extends Component {
       } else {
         values = []
       }
-      this.setState({ arts: values });
+      this.setState({ arts: values.reverse() });
     })
   }
 
@@ -68,11 +68,11 @@ class App extends Component {
 
   renderArts = () => (
       this.state.arts.map((art, i) => (
-          <li>
-            <div className={ `wordart ${art.art}` } key={i}>
-              <span className="text">{ art.text }</span>
-            </div>
-          </li>
+          <div className="col-md-3 " style={{ borderWidth: '3px', borderStyle: 'solid', padding: 20, margin: 20}}>
+              <div className={ `wordart ${art.art}` }  key={i}>
+                  <span className="text" style={{fontSize: '60%'}}>{ art.text }</span>
+              </div>
+          </div>
       ))
   );
   changeArt(e) {
@@ -83,11 +83,11 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Welcome to Firebase</h1>
         </header>
         <div className="container">
           <form onSubmit={this.submit.bind(this)} className="App-intro">
-            <input type="text" placeholder="Texto" ref={this.text}/> <br />
+            <input type="text" placeholder="Texto" maxLength={10} ref={this.text}/> <br />
 
             <select value={this.state.currentArt} onChange={this.changeArt.bind(this)} >
               { this.arts.map(art => (
@@ -96,9 +96,9 @@ class App extends Component {
             </select>
             <input type="submit" value="Enviar"/>
           </form>
-          <ul style={{ marginTop: 20 }}>
+          <div className="row">
             <this.renderArts />
-          </ul>
+          </div>
         </div>
       </div>
     );
