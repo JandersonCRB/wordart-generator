@@ -81,11 +81,11 @@ class App extends Component {
 
   renderArts = () => (
       this.state.arts.map((art, i) => (
-          <div className="col-md-3 " style={{ borderWidth: '3px', borderStyle: 'solid', padding: 20, margin: 20}}>
+          <div className="col-md-3 " style={{ borderWidth: '3px', borderStyle: 'solid', padding: 20, margin: 20}} key={i}>
               <button type="button" className="close" aria-label="Close" style={{ color: 'red'}} onClick={ () => this.delete(art.key) }>
                   <span aria-hidden="true">&times;</span>
               </button>
-              <div className={ `wordart ${art.art}` }  key={i}>
+              <div className={ `wordart ${art.art}` } >
                   <span className="text" style={{fontSize: '60%'}}>{ art.text }</span>
               </div>
           </div>
@@ -106,8 +106,8 @@ class App extends Component {
             <input type="text" placeholder="Texto" maxLength={10} ref={this.text}/> <br />
 
             <select value={this.state.currentArt} onChange={this.changeArt.bind(this)} >
-              { this.arts.map(art => (
-                  <option value={art.value} >{art.name}</option>
+              { this.arts.map((art, key) => (
+                  <option value={art.value} key={key} >{art.name}</option>
               )) }
             </select>
             <input type="submit" value="Enviar"/>
