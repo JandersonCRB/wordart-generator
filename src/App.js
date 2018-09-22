@@ -60,10 +60,16 @@ class App extends Component {
   submit = (e) => {
     e.preventDefault();
     let db = firebase.database();
-    db.ref('arts/').push({
-      text: this.text.current.value,
-      art: this.state.currentArt
-    });
+    const { currentArt } = this.state;
+    const text = this.text.current.value;
+    if(text.length >= 3){
+        db.ref('arts/').push({
+          text: text,
+          art: currentArt
+        });
+    } else {
+        alert("O texto precisa ter pelo menos 3 caracteres.")
+    }
   };
 
   renderArts = () => (
