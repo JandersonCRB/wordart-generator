@@ -49,7 +49,9 @@ class App extends Component {
     db.ref('arts').on('value', snapshot => {
       let values = snapshot.val();
       if(values) {
-        values = Object.values(snapshot.val())
+          values = Object.keys(values).map(key => {
+              return { ...values[key], key }
+          });
       } else {
         values = []
       }
