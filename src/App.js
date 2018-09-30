@@ -5,6 +5,18 @@ import './wordart.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import firebase from 'firebase'
 
+const arts = [
+    { name: 'Rainbow',        value: 'rainbow' },
+    { name: 'Blues',          value: 'blues' },
+    { name: 'Superhero',      value: 'superhero' },
+    { name: 'Radial',         value: 'radial' },
+    { name: 'Tilt',           value: 'tilt' },
+    { name: 'Purple',         value: 'purple' },
+    { name: 'Horizon',        value: 'horizon' },
+    { name: 'Italic Outline', value: 'italic-outline' },
+    { name: 'Slate',          value: 'slate' },
+];
+
 const initFirebase = () => {
   // Initialize Firebase
   let config = {
@@ -21,29 +33,36 @@ const initFirebase = () => {
 class App extends Component {
   constructor(){
     super();
+    initFirebase();
     this.state = {
       arts: [],
+      query: "",
     }
   }
 
   componentWillMount(){
-    initFirebase();
-    this.listenToArts();
+    this.listenToArts("");
   }
 
-  listenToArts() {
-    let db = firebase.database();
-    db.ref('arts').on('value', snapshot => {
-      let values = snapshot.val();
-      if(values) {
-          values = Object.keys(values).map(key => {
-              return { ...values[key], key }
-          });
-      } else {
-        values = []
-      }
-      this.setState({ arts: values.reverse() });
-    })
+
+  listenToArts(query) {
+    let ref = firebase.database().ref('arts');
+    let onQuery = snapshot => {
+        let values = snapshot.val();
+        if(values) {
+            values = Object.keys(values).map(key => {
+                return { ...values[key], key }
+            });
+        } else {
+            values = []
+        }
+        this.setState({ arts: values.reverse() });
+    };
+    if(query.length === 0){
+        ref.on('value', onQuery);
+    } else {
+        ref.orderByChild("art").equalTo(query).on('value', onQuery);
+    }
   }
 
   delete = key => {
@@ -67,6 +86,10 @@ class App extends Component {
       ))
   );
 
+  changeQuery(e){
+      this.listenToArts(e.target.value);
+  }
+
   render() {
     return (
       <div className="App">
@@ -78,6 +101,14 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to Firebase</h1>
         </header>
+        <div className="form-group">
+          <select className="form-control" onChange={this.changeQuery.bind(this)} >
+              <option value="">Todos</option>
+              { arts.map((art, key) => (
+                  <option value={art.value} key={key} >{art.name}</option>
+              )) }
+          </select>
+        </div>
         <div className="container">
           <div className="row">
             <this.renderArts />
@@ -89,34 +120,21 @@ class App extends Component {
 }
 
 class EditBox extends Component {
-    arts = [
-        { name: 'Rainbow',        value: 'rainbow' },
-        { name: 'Blues',          value: 'blues' },
-        { name: 'Superhero',      value: 'superhero' },
-        { name: 'Radial',         value: 'radial' },
-        { name: 'Tilt',           value: 'tilt' },
-        { name: 'Purple',         value: 'purple' },
-        { name: 'Horizon',        value: 'horizon' },
-        { name: 'Italic Outline', value: 'italic-outline' },
-        { name: 'Slate',          value: 'slate' },
-    ];
 
     constructor(props){
         super(props);
-        this.text = React.createRef();
         this.state = {
-            currentArt: this.arts[0].value,
+            currentArt: arts[0].value,
+            currentText: ""
         };
 
     }
 
     componentWillReceiveProps(props) {
         if(props.art){
-            this.text.current.value = props.art.text;
-            this.setState({ currentArt: props.art.art});
+            this.setState({ currentArt: props.art.art, currentText: props.art.text});
         } else {
-            this.text.current.value = "";
-            this.setState({ currentArt: this.arts[0].value })
+            this.setState({ currentArt: arts[0].value, currentText: "" })
         }
     }
 
@@ -126,8 +144,7 @@ class EditBox extends Component {
     }
 
     reset() {
-        this.text.current.value = "";
-        this.setState({ currentArt: this.arts[0].value });
+        this.setState({ currentArt: arts[0].value, currentText: "" });
     }
 
     submit = () => {
@@ -141,11 +158,10 @@ class EditBox extends Component {
 
     create() {
         let db = firebase.database();
-        const { currentArt } = this.state;
-        const text = this.text.current.value;
-        if(text.length >= 3){
+        const { currentArt, currentText } = this.state;
+        if(currentText.length >= 3){
             db.ref('arts/').push({
-                text: text,
+                text: currentText,
                 art: currentArt
             });
         } else {
@@ -157,13 +173,18 @@ class EditBox extends Component {
         let db = firebase.database();
         db.ref('arts/' + this.props.art.key).set({
             art: this.state.currentArt,
-            text: this.text.current.value
+            text: this.state.currentText
         })
 
     }
 
+    change(e) {
+        e.preventDefault();
+        this.setState({ currentText: e.target.value });
+    }
+
     render() {
-        console.log(this.text)
+        const { currentText } = this.state;
         return(
             <div className="modal" tabIndex="-1" role="dialog" id="exampleModal">
                 <div className="modal-dialog" role="document">
@@ -177,11 +198,11 @@ class EditBox extends Component {
                         <form className="App-intro">
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <input type="text" className="form-control" placeholder="Texto" maxLength={10} ref={this.text}/> <br />
+                                    <input type="text" className="form-control" placeholder="Texto" maxLength={10} onChange={this.change.bind(this)} value={ currentText } /> <br />
                                 </div>
                                 <div className="form-group">
                                     <select value={this.state.currentArt} className="form-control" onChange={this.changeArt.bind(this)} >
-                                        { this.arts.map((art, key) => (
+                                        { arts.map((art, key) => (
                                             <option value={art.value} key={key} >{art.name}</option>
                                         )) }
                                     </select>
@@ -189,7 +210,7 @@ class EditBox extends Component {
                                 <div>
                                     <h4>Preview</h4>
                                     <div className={ `wordart ${this.state.currentArt}` }>
-                                        <span className="text" style={{fontSize: '60%'}}>{ this.text.current.value }</span>
+                                        <span className="text" style={{fontSize: '60%'}}>{ currentText }</span>
                                     </div>
                                 </div>
                             </div>
